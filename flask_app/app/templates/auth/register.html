@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Create account — {{ branding.name }}{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Create your account</h1>
+  <p class="muted">Free to start. We will email you a confirmation link.</p>
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <label for="email">Email</label>
+    {{ form.email(id="email", type="email", autocomplete="email", required=true) }}
+    {% for e in form.email.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+
+    <label for="password">Password</label>
+    {{ form.password(id="password", autocomplete="new-password", required=true) }}
+    {% for e in form.password.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+    <p class="hint">At least 10 characters, including a letter and a number.</p>
+
+    <label for="confirm_password">Confirm password</label>
+    {{ form.confirm_password(id="confirm_password", autocomplete="new-password", required=true) }}
+    {% for e in form.confirm_password.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+
+    <button class="btn btn-primary btn-block" type="submit">Create account</button>
+  </form>
+  <p class="muted small">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a>.</p>
+</div>
+{% endblock %}

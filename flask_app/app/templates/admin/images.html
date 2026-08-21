@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}All images — {{ branding.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">All images</h1>
+  <a class="btn btn-ghost" href="{{ url_for('admin.index') }}">Overview</a>
+</div>
+
+<div class="panel table-wrap">
+  <table class="table">
+    <thead><tr><th>Preview</th><th>File</th><th>Owner</th><th>Size</th><th>Dimensions</th><th>Uploaded</th><th>Link</th></tr></thead>
+    <tbody>
+    {% for image in images %}
+      <tr>
+        <td><img class="table-thumb" src="{{ image.thumbnail_url }}" alt="" loading="lazy"></td>
+        <td>{{ image.original_filename }}</td>
+        <td><a href="{{ url_for('admin.user_detail', user_id=image.user_id) }}">#{{ image.user_id }}</a></td>
+        <td>{{ image.file_size | filesize }}</td>
+        <td>{% if image.width %}{{ image.width }}×{{ image.height }}{% else %}—{% endif %}</td>
+        <td>{{ image.uploaded_at | datetime }}</td>
+        <td><a href="{{ image.public_url }}" target="_blank" rel="noopener">Open</a></td>
+      </tr>
+    {% else %}<tr><td colspan="7" class="muted">No images yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="pagination">
+  {% if pagination.has_prev %}<a class="btn btn-ghost" href="{{ url_for('admin.images', page=pagination.prev_num) }}">Previous</a>{% endif %}
+  <span class="muted small">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a class="btn btn-ghost" href="{{ url_for('admin.images', page=pagination.next_num) }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

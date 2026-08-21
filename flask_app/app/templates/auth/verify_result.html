@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Email verification — {{ branding.name }}{% endblock %}
+{% block content %}
+<div class="auth-card center">
+  {% if success %}
+    <h1>Email confirmed</h1>
+    <p class="muted">Your account is ready. Sign in to start uploading.</p>
+    <a class="btn btn-primary btn-block" href="{{ url_for('auth.login') }}">Sign in</a>
+  {% else %}
+    <h1>Link no longer valid</h1>
+    <p class="muted">Confirmation links expire and can only be used once. Sign in to request a fresh one.</p>
+    <a class="btn btn-primary btn-block" href="{{ url_for('auth.login') }}">Sign in</a>
+  {% endif %}
+</div>
+{% endblock %}

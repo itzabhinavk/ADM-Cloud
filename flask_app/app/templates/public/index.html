@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ branding.name }} — image hosting with permanent links{% endblock %}
+
+{% block content %}
+<section class="hero hero-brand">
+  <div class="brand-hero-wrap">
+    <img src="{{ branding.logo_url }}" alt="{{ branding.name }} logo" class="brand-hero-logo">
+    <h1 class="brand-hero-name">{{ branding.name }}</h1>
+    <div class="brand-hero-tagline">
+      <span>HOST</span>
+      <span class="tag-divider">•</span>
+      <span>MANAGE</span>
+      <span class="tag-divider">•</span>
+      <span>TRANSFORM</span>
+      <span class="tag-divider">•</span>
+      <span>DELIVER</span>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <article class="feature"><h2>Direct links</h2><p>Every upload gets a short, stable URL that works without signing in and keeps working for as long as you keep the image.</p></article>
+  <article class="feature"><h2>Fast delivery</h2><p>Images are served from a content delivery network, with automatically optimised thumbnails in your gallery.</p></article>
+  <article class="feature"><h2>Your images only</h2><p>Your library is private to your account. Only you can list, manage or delete what you have uploaded.</p></article>
+  <article class="feature"><h2>Drag and drop</h2><p>Drop files straight onto the dashboard on desktop, or pick them from your camera roll on mobile.</p></article>
+</section>
+{% endblock %}

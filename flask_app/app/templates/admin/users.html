@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Users — {{ branding.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Users</h1>
+  <form class="toolbar" method="get">
+    <input type="search" name="q" value="{{ search }}" placeholder="Search email" aria-label="Search users">
+    <button class="btn btn-ghost" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="panel table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>ID</th><th>Email</th><th>Role</th><th>Verified</th><th>Blocked</th><th>Joined</th><th>Last login</th><th>Images</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td><a href="{{ url_for('admin.user_detail', user_id=user.id) }}">{{ user.email }}</a></td>
+        <td>{{ user.role }}</td>
+        <td>{{ "yes" if user.email_verified else "no" }}</td>
+        <td>{{ "yes" if user.is_blocked else "no" }}</td>
+        <td>{{ user.created_at | datetime }}</td>
+        <td>{{ user.last_login_at | datetime }}</td>
+        <td>{{ counts.get(user.id, 0) }}</td>
+        <td class="row-actions">
+          {% if user.is_blocked %}
+            <form method="post" action="{{ url_for('admin.unblock_user', user_id=user.id) }}" class="inline-form">
+              {{ form.hidden_tag() }}<button class="btn btn-small btn-ghost" type="submit">Unblock</button>
+            </form>
+          {% else %}
+            <form method="post" action="{{ url_for('admin.block_user', user_id=user.id) }}" class="inline-form">
+              {{ form.hidden_tag() }}<button class="btn btn-small btn-ghost" type="submit">Block</button>
+            </form>
+          {% endif %}
+          <form method="post" action="{{ url_for('admin.delete_user', user_id=user.id) }}" class="inline-form js-confirm-form" data-confirm="Delete {{ user.email }} and all of their images?">
+            {{ form.hidden_tag() }}<button class="btn btn-small btn-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}<tr><td colspan="9" class="muted">No users found.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="pagination">
+  {% if pagination.has_prev %}<a class="btn btn-ghost" href="{{ url_for('admin.users', page=pagination.prev_num, q=search) }}">Previous</a>{% endif %}
+  <span class="muted small">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a class="btn btn-ghost" href="{{ url_for('admin.users', page=pagination.next_num, q=search) }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

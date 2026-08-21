@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ branding.name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Your images</h1>
+    <p class="muted">Signed in as {{ current_user.email }}</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="stat-value">{{ total_images }}</span><span class="stat-label">Images</span></div>
+    <div class="stat"><span class="stat-value">{{ total_bytes | filesize }}</span><span class="stat-label">Storage used</span></div>
+  </div>
+</div>
+
+<section class="category-bar" aria-label="Image folders">
+  <div>
+    <label for="categoryFilter">Folder</label>
+    <select id="categoryFilter" class="category-select">
+      <option value="" {% if not selected_category_id %}selected{% endif %}>Public folder</option>
+      {% for category in categories %}
+        <option value="{{ category.id }}" {% if selected_category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="category-create">
+    <input id="newCategoryName" type="text" maxlength="100" placeholder="New folder name" aria-label="New folder name">
+    <button class="btn btn-ghost" id="createCategoryBtn" type="button">Add folder</button>
+  </div>
+</section>
+
+<section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload images">
+  <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+  <div class="dropzone-inner">
+    <div class="dropzone-icon" aria-hidden="true">↑</div>
+    <p class="dropzone-title">Drag &amp; drop images here</p>
+    <label for="uploadCategory">Save in</label>
+    <select id="uploadCategory" class="category-select">
+      <option value="">Public folder</option>
+      {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
+    </select>
+    <p class="muted small">or <button type="button" class="link-btn" id="browse-btn">browse your files</button> · up to {{ max_upload_size | filesize }} each</p>
+  </div>
+  <ul id="upload-queue" class="upload-queue"></ul>
+</section>
+
+<form class="toolbar" method="get" action="{{ url_for('dashboard.index') }}">
+  <input type="search" name="q" value="{{ search }}" placeholder="Search by filename" aria-label="Search images">
+  <button class="btn btn-ghost" type="submit">Search</button>
+  {% if search %}<a class="btn btn-ghost" href="{{ url_for('dashboard.index') }}">Clear</a>{% endif %}
+</form>
+
+<div id="gallery" class="gallery">
+  {% for image in images %}
+    {% include "dashboard/_image_card.html" %}
+  {% endfor %}
+</div>
+
+{% if not images %}
+  <div id="empty-state" class="empty-state">
+    <h2>No images yet</h2>
+    <p class="muted">Upload your first image to get a permanent link you can use anywhere.</p>
+  </div>
+{% endif %}
+
+{% if pagination.pages > 1 %}
+<nav class="pagination">
+  {% if pagination.has_prev %}<a class="btn btn-ghost" href="{{ url_for('dashboard.index', page=pagination.prev_num, q=search) }}">Previous</a>{% endif %}
+  <span class="muted small">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+  {% if pagination.has_next %}<a class="btn btn-ghost" href="{{ url_for('dashboard.index', page=pagination.next_num, q=search) }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+
+<dialog id="confirm-dialog" class="dialog">
+  <h2>Delete image?</h2>
+  <p class="muted">This removes the image and its public link permanently.</p>
+  <div class="dialog-actions">
+    <button class="btn btn-ghost" value="cancel" id="confirm-cancel" type="button">Cancel</button>
+    <button class="btn btn-danger" value="confirm" id="confirm-ok" type="button">Delete</button>
+  </div>
+</dialog>
+<script id="category-data" type="application/json">{{ categories | map(attribute='id') | list | tojson }}</script>
+{% endblock %}

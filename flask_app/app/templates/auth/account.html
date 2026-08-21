@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Account — {{ branding.name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">Account</h1>
+<div class="grid-2">
+  <section class="panel">
+    <h2>Profile</h2>
+    <dl class="meta-list">
+      <dt>Email</dt><dd>{{ current_user.email }}</dd>
+      <dt>Status</dt><dd>{{ "Verified" if current_user.email_verified else "Unverified" }}</dd>
+      <dt>Member since</dt><dd>{{ current_user.created_at | datetime }}</dd>
+      <dt>Last sign-in</dt><dd>{{ current_user.last_login_at | datetime }}</dd>
+      <dt>Images</dt><dd>{{ image_count }}</dd>
+    </dl>
+  </section>
+  <section class="panel">
+    <h2>Change password</h2>
+    <form method="post" novalidate>
+      {{ form.hidden_tag() }}
+      <label for="current_password">Current password</label>
+      {{ form.current_password(id="current_password", autocomplete="current-password") }}
+      {% for e in form.current_password.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+      <label for="password">New password</label>
+      {{ form.password(id="password", autocomplete="new-password") }}
+      {% for e in form.password.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+      <label for="confirm_password">Confirm new password</label>
+      {{ form.confirm_password(id="confirm_password", autocomplete="new-password") }}
+      {% for e in form.confirm_password.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+      <button class="btn btn-primary" type="submit">Update password</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

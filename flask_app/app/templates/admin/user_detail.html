@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ user.email }} — {{ branding.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">{{ user.email }}</h1>
+  <a class="btn btn-ghost" href="{{ url_for('admin.users') }}">Back to users</a>
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>Account</h2>
+    <dl class="meta-list">
+      <dt>ID</dt><dd>{{ user.id }}</dd>
+      <dt>Role</dt><dd>{{ user.role }}</dd>
+      <dt>Verified</dt><dd>{{ "yes" if user.email_verified else "no" }}</dd>
+      <dt>Blocked</dt><dd>{{ "yes" if user.is_blocked else "no" }}</dd>
+      <dt>Joined</dt><dd>{{ user.created_at | datetime }}</dd>
+      <dt>Last login</dt><dd>{{ user.last_login_at | datetime }}</dd>
+      <dt>Storage</dt><dd>{{ total_bytes | filesize }}</dd>
+    </dl>
+    <div class="row-actions">
+      {% if user.is_blocked %}
+        <form method="post" action="{{ url_for('admin.unblock_user', user_id=user.id) }}" class="inline-form">{{ form.hidden_tag() }}<button class="btn btn-ghost" type="submit">Unblock</button></form>
+      {% else %}
+        <form method="post" action="{{ url_for('admin.block_user', user_id=user.id) }}" class="inline-form">{{ form.hidden_tag() }}<button class="btn btn-ghost" type="submit">Block</button></form>
+      {% endif %}
+      <form method="post" action="{{ url_for('admin.delete_user', user_id=user.id) }}" class="inline-form js-confirm-form" data-confirm="Delete this user and all of their images?">{{ form.hidden_tag() }}<button class="btn btn-danger" type="submit">Delete user</button></form>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Latest uploads</h2>
+    <div class="gallery gallery-compact">
+      {% for image in images %}
+        <article class="card">
+          <a class="card-thumb" href="{{ image.public_url }}" target="_blank" rel="noopener">
+            <img src="{{ image.thumbnail_url }}" alt="{{ image.original_filename }}" loading="lazy">
+          </a>
+          <div class="card-body"><p class="card-name">{{ image.original_filename }}</p>
+          <p class="card-meta">{{ image.file_size | filesize }} · {{ image.uploaded_at | datetime }}</p></div>
+        </article>
+      {% else %}<p class="muted">No uploads.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

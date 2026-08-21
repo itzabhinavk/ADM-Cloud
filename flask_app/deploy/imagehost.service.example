@@ -1,0 +1,18 @@
+[Unit]
+Description=Image hosting platform (Gunicorn)
+After=network.target postgresql.service
+
+[Service]
+User=imagehost
+Group=www-data
+WorkingDirectory=/srv/imagehost
+EnvironmentFile=/srv/imagehost/.env
+ExecStart=/srv/imagehost/.venv/bin/gunicorn --workers 4 --timeout 90 --bind 127.0.0.1:8000 wsgi:app
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

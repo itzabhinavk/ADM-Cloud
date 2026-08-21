@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ branding.name }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}Fast, private image hosting with permanent links you can use anywhere.{% endblock %}">
+  <meta name="theme-color" content="{{ branding.primary }}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="{{ branding.name }}">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="robots" content="{% block robots %}index,follow{% endblock %}">
+  {% if branding.favicon_url %}<link rel="icon" href="{{ branding.favicon_url }}">
+  {% if branding.logo_url %}<link rel="apple-touch-icon" href="{{ branding.logo_url }}">{% endif %}{% endif %}
+  <link rel="manifest" href="{{ url_for('public.manifest') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <style>:root{--brand:{{ branding.primary }};--brand-2:{{ branding.secondary }};}</style>
+  {% if current_user.is_authenticated %}<meta name="csrf-token" content="{{ csrf_token() }}">{% endif %}
+</head>
+<body class="{% if current_user.is_authenticated %}app-shell{% endif %}">
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="{{ url_for('dashboard.index') if current_user.is_authenticated else url_for('public.index') }}">
+      {% if branding.logo_url %}<img src="{{ branding.logo_url }}" alt="{{ branding.name }}" class="brand-logo">
+      {% else %}<span class="brand-mark" aria-hidden="true"></span>{% endif %}
+      <span class="brand-name">{{ branding.name }}</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      {% if current_user.is_authenticated %}
+        <a class="nav-link {% if request.blueprint == 'dashboard' %}is-active{% endif %}" href="{{ url_for('dashboard.index') }}">Library</a>
+        {% if current_user.is_admin %}<a class="nav-link {% if request.blueprint == 'admin' %}is-active{% endif %}" href="{{ url_for('admin.index') }}">Admin</a>{% endif %}
+        <a class="nav-link {% if request.endpoint == 'auth.account' %}is-active{% endif %}" href="{{ url_for('auth.account') }}">Account</a>
+        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-ghost btn-small" type="submit">Sign out</button>
+        </form>
+      {% else %}
+        <a class="nav-link" href="{{ url_for('auth.login') }}">Sign in</a>
+        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+        <a class="btn btn-primary btn-small" href="{{ url_for('auth.register') }}">Get started</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main class="container main">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flashes">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <span>&copy; {{ branding.name }}</span>
+    <span class="footer-links">
+      <a href="mailto:{{ branding.support_email }}">Support</a>
+      <a href="{{ url_for('public.healthz') }}">Status</a>
+    </span>
+  </div>
+</footer>
+
+{% if current_user.is_authenticated %}
+<nav class="tabbar" aria-label="Mobile">
+  <a class="tab {% if request.blueprint == 'dashboard' %}is-active{% endif %}" href="{{ url_for('dashboard.index') }}">
+    <span class="tab-icon" aria-hidden="true">▦</span><span>Library</span>
+  </a>
+  <a class="tab tab-primary" href="{{ url_for('dashboard.index') }}#dropzone">
+    <span class="tab-icon" aria-hidden="true">＋</span><span>Upload</span>
+  </a>
+  {% if current_user.is_admin %}
+  <a class="tab {% if request.blueprint == 'admin' %}is-active{% endif %}" href="{{ url_for('admin.index') }}">
+    <span class="tab-icon" aria-hidden="true">⚙</span><span>Admin</span>
+  </a>
+  {% endif %}
+  <a class="tab {% if request.endpoint == 'auth.account' %}is-active{% endif %}" href="{{ url_for('auth.account') }}">
+    <span class="tab-icon" aria-hidden="true">◍</span><span>Account</span>
+  </a>
+</nav>
+{% endif %}
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

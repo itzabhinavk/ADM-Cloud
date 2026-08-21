@@ -1,0 +1,50 @@
+server {
+    listen 80;
+    server_name example.com img.example.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    client_max_body_size 12M;   # keep >= UPLOAD_MAX_SIZE
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    location /static/ {
+        alias /srv/imagehost/app/static/;
+        expires 30d;
+        access_log off;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+}
+
+# Optional dedicated image domain. Set PUBLIC_IMAGE_BASE_URL=https://img.example.com
+server {
+    listen 443 ssl http2;
+    server_name img.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    location /i/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / { return 404; }
+}

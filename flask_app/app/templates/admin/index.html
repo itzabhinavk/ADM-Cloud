@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Admin — {{ branding.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1 class="page-title">Admin overview</h1>
+  <nav class="nav">
+    <a class="btn btn-ghost" href="{{ url_for('admin.users') }}">Users</a>
+    <a class="btn btn-ghost" href="{{ url_for('admin.images') }}">Images</a>
+  </nav>
+</div>
+
+<div class="stat-grid">
+  <div class="panel stat-tile"><span class="stat-value">{{ total_users }}</span><span class="stat-label">Users</span></div>
+  <div class="panel stat-tile"><span class="stat-value">{{ verified_users }}</span><span class="stat-label">Verified</span></div>
+  <div class="panel stat-tile"><span class="stat-value">{{ blocked_users }}</span><span class="stat-label">Blocked</span></div>
+  <div class="panel stat-tile"><span class="stat-value">{{ total_images }}</span><span class="stat-label">Images</span></div>
+  <div class="panel stat-tile"><span class="stat-value">{{ total_bytes | filesize }}</span><span class="stat-label">Storage</span></div>
+</div>
+
+<div class="grid-2">
+  <section class="panel">
+    <h2>Recent registrations</h2>
+    <table class="table">
+      <thead><tr><th>Email</th><th>Joined</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for user in recent_users %}
+        <tr>
+          <td><a href="{{ url_for('admin.user_detail', user_id=user.id) }}">{{ user.email }}</a></td>
+          <td>{{ user.created_at | datetime }}</td>
+          <td>{{ "Blocked" if user.is_blocked else ("Verified" if user.email_verified else "Pending") }}</td>
+        </tr>
+      {% else %}<tr><td colspan="3" class="muted">No users yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <section class="panel">
+    <h2>Recent uploads</h2>
+    <table class="table">
+      <thead><tr><th>File</th><th>Size</th><th>Uploaded</th></tr></thead>
+      <tbody>
+      {% for image in recent_images %}
+        <tr><td>{{ image.original_filename }}</td><td>{{ image.file_size | filesize }}</td><td>{{ image.uploaded_at | datetime }}</td></tr>
+      {% else %}<tr><td colspan="3" class="muted">No uploads yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+{% endblock %}

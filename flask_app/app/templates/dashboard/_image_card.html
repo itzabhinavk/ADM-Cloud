@@ -1,0 +1,18 @@
+<article class="card" data-slug="{{ image.public_slug }}" data-url="{{ image.public_url }}">
+  <a class="card-thumb" href="{{ image.public_url }}">
+    <img src="{{ image.thumbnail_url }}" alt="{{ image.original_filename }}" loading="lazy" decoding="async">
+  </a>
+  <div class="card-body">
+    <p class="card-name" title="{{ image.original_filename }}">{{ image.original_filename }}</p>
+    <p class="card-meta">
+      {{ image.uploaded_at | datetime }}
+      {% if image.width and image.height %} · {{ image.width }}×{{ image.height }}{% endif %}
+      · {{ image.file_size | filesize }}
+    </p>
+  </div>
+  <div class="card-actions">
+    <button class="btn btn-small btn-primary js-copy" type="button" data-url="{{ image.public_url }}">Copy URL</button>
+    <a class="btn btn-small btn-ghost" href="{{ image.public_url }}" target="_blank" rel="noopener">Open</a>
+    <button class="btn btn-small btn-danger js-delete" type="button" data-slug="{{ image.public_slug }}">Delete</button>
+  </div>
+</article>
