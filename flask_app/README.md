@@ -64,7 +64,7 @@ python -m pytest -q
 | --- | --- |
 | `FLASK_ENV` | `development`, `production` or `testing` |
 | `SECRET_KEY` | Session/CSRF signing key — long random string |
-| `DATABASE_URL` | e.g. `postgresql+psycopg2://user:pass@host:5432/db` |
+| `DATABASE_URL` | e.g. `postgresql+psycopg://user:pass@host:5432/db` |
 | `APP_NAME`, `APP_BASE_URL` | Product name and canonical URL |
 | `APP_LOGO_URL`, `APP_FAVICON_URL` | Branding assets |
 | `APP_PRIMARY_COLOR`, `APP_SECONDARY_COLOR` | Theme colours |
@@ -89,7 +89,7 @@ CREATE USER imagehost WITH PASSWORD 'strong-password';
 CREATE DATABASE imagehost OWNER imagehost;
 ```
 
-Set `DATABASE_URL=postgresql+psycopg2://imagehost:strong-password@localhost:5432/imagehost`.
+Set `DATABASE_URL=postgresql+psycopg://imagehost:strong-password@localhost:5432/imagehost`.
 
 ## Cloudinary setup
 

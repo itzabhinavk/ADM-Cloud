@@ -3,6 +3,7 @@ services:
     name: adm-cloud
     runtime: python
     rootDir: flask_app
+    pythonVersion: 3.13.4
     buildCommand: pip install -r requirements.txt
     preDeployCommand: flask db upgrade
     startCommand: gunicorn --workers 2 --timeout 90 --bind 0.0.0.0:$PORT wsgi:app
