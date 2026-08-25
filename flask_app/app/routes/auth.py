@@ -87,10 +87,17 @@ def register():
             db.session.add(user)
             db.session.commit()
             token = issue_token(user)
-            send_verification_email(user, token)
+            if not send_verification_email(user, token):
+                flash(
+                    "Account created, but the verification email could not be sent. "
+                    "Please contact support or try resending it later.",
+                    "warning",
+                )
+            else:
+                flash(GENERIC_SIGNUP_NOTICE, "success")
         else:
             current_app.logger.info("Registration attempt for an existing account.")
-        flash(GENERIC_SIGNUP_NOTICE, "success")
+            flash(GENERIC_SIGNUP_NOTICE, "success")
         return redirect(url_for("auth.login"))
 
     return render_template("auth/register.html", form=form)
@@ -215,6 +222,20 @@ def account():
             return redirect(url_for("auth.account"))
     image_count = current_user.images.count()
     return render_template("auth/account.html", form=form, image_count=image_count)
+
+
+@auth_bp.route("/account/delete", methods=["POST"])
+@login_required
+def delete_account():
+    user = current_user
+    from ..services.image_service import delete_user_images
+
+    delete_user_images(user)
+    db.session.delete(user)
+    db.session.commit()
+    logout_user()
+    flash("Your account and images have been deleted.", "info")
+    return redirect(url_for("public.index"))
 
 
 @auth_bp.route("/next")

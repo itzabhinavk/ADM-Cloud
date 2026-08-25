@@ -113,3 +113,12 @@ def test_anonymous_dashboard_redirects_to_login(client, app):
     res = client.get("/dashboard")
     assert res.status_code == 302
     assert "/auth/login" in res.headers["Location"]
+
+
+def test_account_can_be_deleted(client, app, fake_storage):
+    user = make_user(email="delete@example.com")
+    login(client, "delete@example.com")
+    res = client.post("/auth/account/delete", follow_redirects=False)
+    assert res.status_code == 302
+    assert User.query.get(user.id) is None
+    assert client.get("/dashboard").status_code == 302

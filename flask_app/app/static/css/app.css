@@ -68,6 +68,7 @@ input:focus{outline:2px solid var(--brand);outline-offset:1px}
 .stat-value{font-size:22px;font-weight:700}.stat-label{font-size:13px;color:var(--muted)}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.danger-panel{border-color:#f3c0bb}
 .panel h2{margin:0 0 14px;font-size:17px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .dropzone{background:var(--surface);border:2px dashed var(--border);border-radius:18px;padding:34px 20px;text-align:center;margin-bottom:22px;transition:.15s;cursor:pointer}

@@ -29,5 +29,13 @@
       <button class="btn btn-primary" type="submit">Update password</button>
     </form>
   </section>
+  <section class="panel danger-panel">
+    <h2>Delete account</h2>
+    <p class="muted">This permanently deletes your account and all uploaded images.</p>
+    <form method="post" action="{{ url_for('auth.delete_account') }}" onsubmit="return confirm('Delete your account and all images permanently?');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-danger" type="submit">Delete account</button>
+    </form>
+  </section>
 </div>
 {% endblock %}
