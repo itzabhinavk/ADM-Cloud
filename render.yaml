@@ -6,7 +6,7 @@ services:
     pythonVersion: 3.13.4
     buildCommand: pip install -r requirements.txt
     preDeployCommand: flask --app manage.py db upgrade
-    startCommand: gunicorn --workers 2 --timeout 90 --bind 0.0.0.0:$PORT wsgi:app
+    startCommand: flask --app manage.py db upgrade && gunicorn --workers 2 --timeout 90 --bind 0.0.0.0:$PORT wsgi:app
     healthCheckPath: /healthz
     envVars:
       - key: FLASK_ENV
